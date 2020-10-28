@@ -50,7 +50,7 @@ export default function StackedAreaChart(container) {
     //let xDomain, data; // -- (1)
     let selected = null, xDomain, data;
 
-    
+    const listeners = { zoomed: null };
     const zoom = d3.zoom()
         .extent([[0,0], [width,height]])
         .on('zoom', zoomed);
@@ -61,10 +61,8 @@ export default function StackedAreaChart(container) {
         const copy = xScale.copy().domain(
             d3.extent(data, d => d.date)
         );
-        console.log(copy);
         const rescaled = transform.rescaleX(copy);
         xDomain = rescaled.domain();
-        update(xDomain);
     }
 
 	function update(_data){
@@ -107,13 +105,14 @@ export default function StackedAreaChart(container) {
                 return yScale(d[1]);
             })
             
-        const areas = svg.selectAll("area")
+        const areas = svg.selectAll(".area")
             .data(stackedData, d => d.key);
         console.log(stackedData);
         
         
         areas.enter() // or you could use join()
             .append("path")
+            .attr('class','area')
             .attr("clip-path", "url(#clip)")
             .merge(areas)
             .attr('d',area)
@@ -125,14 +124,12 @@ export default function StackedAreaChart(container) {
             .on("click", (event, d) => {
                 // toggle selected based on d.key
                 if (selected === d.key) {
-              selected = null;
-            } else {
-                selected = d.key;
-            }
+                    selected = null;
+                } else {
+                    selected = d.key;
+                }
             update(data); // simply update the chart again
-        });
-
-        //FIX THE areas.enter!! 
+            });
         
         areas.exit().remove();
 
@@ -167,9 +164,15 @@ export default function StackedAreaChart(container) {
     function filterByDate(range){
 		xDomain = range;  // -- (3)
 		update(data); // -- (4)
-	}
+    }
+    
+    function on(event,listener) {
+        listeners[event] = listener;
+        //FIX THIS
+  }
 	return {
         update,
-        filterByDate
+        filterByDate,
+        on
 	}
 }

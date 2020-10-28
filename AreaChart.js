@@ -111,9 +111,16 @@ export default function AreaChart(container){
             .attr('d',area);
 
 
-	}
+    }
+    function setBrush(timeRange){
+        timeRange.map(xScale);
+        svg.select(".brush");
+        brush.move(timeRange)
+        
+    }
     function on(event, listener) {
-		listeners[event] = listener;
+        listeners[event] = listener;
+
   }
 	return {
         update, // ES6 shorthand for "update": update

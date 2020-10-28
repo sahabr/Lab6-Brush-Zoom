@@ -25,5 +25,8 @@ d3.csv('unemployment.csv', d3.autoType).then(data=>{
     areaChart1.on("brushed", (range)=>{
         stackChart1.filterByDate(range);
     })
+    stackChart1.on("zoom", (timeRange)=>{
+        areaChart1.setBrush(timeRange);
+    });
    
 })
